@@ -13,7 +13,7 @@ URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
 FILE_EXTENSIONS = [".jpg", ".gif"]
 
 # Set petname to loop through
-PET_NAME = "Poysion"
+PETNAME = "Poysion"
 
 TODAY = datetime.date.today()
 
@@ -128,7 +128,7 @@ print(start_date)
 TODAY = datetime.date(2017, 10, 22)
 
 # Loop through all given dates
-while current_date <= today:
+while current_date <= TODAY:
     print(current_date)
 
     # Adjust date if it's an irregular case
@@ -137,7 +137,7 @@ while current_date <= today:
     current_date += datetime.timedelta(days=7)
 
     for ext in FILE_EXTENSIONS:
-        current_date_url = URL_BASE + PET_NAME + "-" + str(current_date) + ext
+        current_date_url = URL_BASE + PETNAME + "-" + str(current_date) + ext
         valid_urls.append(current_date_url)
 
 print(valid_urls)
