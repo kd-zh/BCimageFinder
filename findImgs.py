@@ -22,7 +22,7 @@ URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
 FILE_EXTENSIONS = [".jpg", ".gif"]
 
 # Set petname to loop through
-PETNAME = "fef"
+PETNAME = "poysion"
 
 NUM_IMG_EXPECTED = 2
 
@@ -150,7 +150,7 @@ async def batch_check_urls(urls, batch_size=10):
         batch = urls[i:i + batch_size]
         tasks = [asyncio.create_task(check_url(url)) for url in batch]
         results += await asyncio.gather(*tasks, return_exceptions=True)
-        print("URLs scanned: ", i, "/", len(urls))
+        print("URLs scanned: ", i, "/", len(urls), " | BC Images Found: ", len(bc_entries))
         if len(bc_entries) == NUM_IMG_EXPECTED:
             break
 
