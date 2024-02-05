@@ -2,6 +2,9 @@ import httpx
 import asyncio
 import datetime
 
+# ? Stop after X results were found 
+# ? how old is the pet?
+
 #! -------- Set constants --------
 
 # Starting date of BC (Monday)
@@ -114,7 +117,7 @@ valid_urls = []
 bc_entries = []
 
 # Debugging
-START_DATE = datetime.date(2016, 9, 3)
+START_DATE = datetime.date(2012, 9, 3)
 current_date = closest_friday(START_DATE)
 
 TODAY = closest_friday(TODAY)
@@ -143,10 +146,12 @@ async def batch_check_urls(urls, batch_size=10):
         batch = urls[i:i + batch_size]
         tasks = [asyncio.create_task(check_url(url)) for url in batch]
         results += await asyncio.gather(*tasks, return_exceptions=True)
-        print("URLs scanned: ", i)
+        print("URLs scanned: ", i, "/", len(urls))
 
     return results
 
 results = asyncio.run(batch_check_urls(valid_urls))
+
+print(len(bc_entries), " images were found.")
 
 print(bc_entries)
