@@ -2,9 +2,10 @@ import httpx
 import asyncio
 import datetime
 
+#! -------- Set constants --------
 
 # Starting date of BC (Monday)
-start_date = datetime.date(2000, 11, 27)  # Year, Month, Day
+START_DATE = datetime.date(2000, 11, 27)  # Year, Month, Day
 
 # Base URL for BC winners
 URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
@@ -16,6 +17,9 @@ FILE_EXTENSIONS = [".jpg", ".gif"]
 PETNAME = "Poysion"
 
 TODAY = datetime.date.today()
+
+
+#! -------- Define functions --------
 
 def handle_bc_irregularities(date: datetime.date):
     """
@@ -85,35 +89,23 @@ def closest_friday(date: datetime.date):
         else:
             return date + datetime.timedelta(days=days_to_next_friday)
 
-# async def check_url(url):
-#     async with httpx.AsyncClient() as client:
-#         try:
-#             response = await client.get(url)
-#             if response.status_code == 200:
-#                 bc_entries.append(url)
-#                 return f"URL {url} is valid and returns a resource."
-#             # else:
-#             #     return f"URL {url} returned a status code of {response.status_code}."
-#         except httpx.RequestError as e:
-#             return f"URL {url} resulted in an error: {e}"
+async def check_url(url):
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            if response.status_code == 200:
+                bc_entries.append(url)
+                return f"URL {url} is valid and returns an image."
+            else:
+                return f"URL {url} returned a status code of {response.status_code}."
+        except httpx.RequestError as e:
+            return f"URL {url} resulted in an error: {e}"
 
-# import requests
-# def check_url(url): 
-#     """
-#         DEFUNCT - import requests version
-#     """
-#     try:
-#         response = requests.get(url)
-#         if response.status_code == 200:
-#             bc_entries.append(url)
-#             return "URL is valid and returns a resource."
-#         else:
-#             return f"URL returned a status code of {response.status_code}."
-#     except requests.RequestException as e:
-#         return f"An error occurred: {e}"
+
+#! -------- Start Logic --------
         
 # Set dates to loop through
-current_date = closest_friday(start_date)
+current_date = closest_friday(START_DATE)
 
 # Initialise a list to store all potential URLs
 valid_urls = []
@@ -122,10 +114,10 @@ valid_urls = []
 bc_entries = []
 
 # Debugging
-start_date = datetime.date(2024, 9, 3)
-start_date = closest_friday(start_date)
-print(start_date)
-TODAY = datetime.date(2017, 10, 22)
+START_DATE = datetime.date(2016, 9, 3)
+current_date = closest_friday(START_DATE)
+
+TODAY = closest_friday(TODAY)
 
 # Loop through all given dates
 while current_date <= TODAY:
@@ -133,6 +125,7 @@ while current_date <= TODAY:
 
     # Adjust date if it's an irregular case
     current_date = handle_bc_irregularities(current_date)
+
     # Move to the next week
     current_date += datetime.timedelta(days=7)
 
@@ -140,23 +133,20 @@ while current_date <= TODAY:
         current_date_url = URL_BASE + PETNAME + "-" + str(current_date) + ext
         valid_urls.append(current_date_url)
 
-print(valid_urls)
+print("Number of valid URLS: ", len(valid_urls))
 
-# async def batch_check_urls(urls):
-#     tasks = [check_url(url) for url in urls]
-#     return await asyncio.gather(*tasks)
+async def batch_check_urls(urls, batch_size=10):
+    # Process the URLs in batches
+    results = []
 
-# # List of URLs to check
-# urls = [
-#     "https://upload.neopets.com/beauty/images/winners/Poysion-2017-09-29.gif",
-#     "https://upload.neopets.com/beauty/images/winners/Poysion-2017-09-29.jpg",
-# ]
+    for i in range(0, len(urls), batch_size):
+        batch = urls[i:i + batch_size]
+        tasks = [asyncio.create_task(check_url(url)) for url in batch]
+        results += await asyncio.gather(*tasks, return_exceptions=True)
+        print("URLs scanned: ", i)
 
-# results = asyncio.run(batch_check_urls(valid_urls))
-# for result in results:
-#     print(result)
+    return results
 
-# print(bc_entries)
-        
+results = asyncio.run(batch_check_urls(valid_urls))
 
-        
+print(bc_entries)
