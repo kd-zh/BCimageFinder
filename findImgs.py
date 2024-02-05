@@ -1,3 +1,4 @@
+import time
 import httpx
 import asyncio
 import datetime
@@ -12,10 +13,12 @@ PETNAME = "Poysion"
 NUM_IMG_EXPECTED = 1
 
 # Set how old your Neopet is (in hours)
-HOURS = 114504
+HOURS = 106272
 
 
 #! -------- Set constants --------
+
+START_TIME = time.time()
 
 # Starting date of BC (Monday)
 START_DATE = datetime.date(2000, 11, 27)  # Year, Month, Day
@@ -185,3 +188,11 @@ results = asyncio.run(batch_check_urls(valid_urls))
 print(len(bc_entries), " image(s) were found.")
 
 print(bc_entries)
+
+END_TIME = time.time()
+
+ELAPSED_TIME = END_TIME - START_TIME
+
+TIME_PER_URL = ELAPSED_TIME/len(valid_urls)
+
+print("Time taken per URL: ", TIME_PER_URL)
