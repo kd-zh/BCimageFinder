@@ -4,6 +4,8 @@ Find your Neopet's [Beauty Contest](https://www.jellyneo.net/?go=beautycontest) 
 
 All Neopets trademarks belong to Neopets, I do not own Neopets. [Here](https://upload.neopets.com/robots.txt) is the robots.txt for the host of the BC images.
 
+Shouldn't need to be said, but do not use art that you didn't draw yourself!
+
 BC = Beauty Contest
 
 
