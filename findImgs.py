@@ -9,6 +9,11 @@ import datetime
 
 # Starting date of BC (Monday)
 START_DATE = datetime.date(2000, 11, 27)  # Year, Month, Day
+current_date = START_DATE # current as in the current date being looped through
+
+# Today's date
+TODAY = datetime.date.today()
+end_date = TODAY
 
 # Base URL for BC winners
 URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
@@ -17,9 +22,13 @@ URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
 FILE_EXTENSIONS = [".jpg", ".gif"]
 
 # Set petname to loop through
-PETNAME = "Poysion"
+PETNAME = "fef"
 
-TODAY = datetime.date.today()
+NUM_IMG_EXPECTED = 2
+
+# Debugging
+current_date = datetime.date(2011, 2, 1)
+# end_date = datetime.date(2012, 9, 3)
 
 
 #! -------- Define functions --------
@@ -106,9 +115,10 @@ async def check_url(url):
 
 
 #! -------- Start Logic --------
-        
-# Set dates to loop through
-current_date = closest_friday(START_DATE)
+
+# Clean to grab the closest Friday (when winners are announced)
+current_date = closest_friday(current_date)
+end_date = closest_friday(end_date)
 
 # Initialise a list to store all potential URLs
 valid_urls = []
@@ -116,14 +126,8 @@ valid_urls = []
 # Initialise list to store BC entries (valid URLs)
 bc_entries = []
 
-# Debugging
-START_DATE = datetime.date(2012, 9, 3)
-current_date = closest_friday(START_DATE)
-
-TODAY = closest_friday(TODAY)
-
 # Loop through all given dates
-while current_date <= TODAY:
+while current_date <= end_date:
     print(current_date)
 
     # Adjust date if it's an irregular case
@@ -147,11 +151,13 @@ async def batch_check_urls(urls, batch_size=10):
         tasks = [asyncio.create_task(check_url(url)) for url in batch]
         results += await asyncio.gather(*tasks, return_exceptions=True)
         print("URLs scanned: ", i, "/", len(urls))
+        if len(bc_entries) == NUM_IMG_EXPECTED:
+            break
 
     return results
 
 results = asyncio.run(batch_check_urls(valid_urls))
 
-print(len(bc_entries), " images were found.")
+print(len(bc_entries), " image(s) were found.")
 
 print(bc_entries)
