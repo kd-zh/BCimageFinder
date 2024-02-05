@@ -2,7 +2,6 @@ import httpx
 import asyncio
 import datetime
 
-# ? Stop after X results were found 
 # ? how old is the pet?
 
 #! -------- Set constants --------
@@ -21,10 +20,11 @@ URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
 # The BC to the best of my knowledge only allows these
 FILE_EXTENSIONS = [".jpg", ".gif"]
 
-# Set petname to loop through
-PETNAME = "poysion"
+# Set petname to loop through (Case-sensitive)
+PETNAME = "Poysion"
 
-NUM_IMG_EXPECTED = 2
+# Set the number of trophies your pet has
+NUM_IMG_EXPECTED = 1
 
 # Debugging
 current_date = datetime.date(2011, 2, 1)
