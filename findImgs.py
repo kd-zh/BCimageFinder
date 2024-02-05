@@ -2,7 +2,18 @@ import httpx
 import asyncio
 import datetime
 
-# ? how old is the pet?
+
+#! -------- Changeable Variables --------
+
+# Set petname to loop through (case-sensitive)
+PETNAME = "Poysion"
+
+# Set the number of trophies your pet has
+NUM_IMG_EXPECTED = 1
+
+# Set how old your Neopet is (in hours)
+HOURS = 114504
+
 
 #! -------- Set constants --------
 
@@ -20,16 +31,6 @@ URL_BASE ="https://upload.neopets.com/beauty/images/winners/"
 # The BC to the best of my knowledge only allows these
 FILE_EXTENSIONS = [".jpg", ".gif"]
 
-# Set petname to loop through (Case-sensitive)
-PETNAME = "Poysion"
-
-# Set the number of trophies your pet has
-NUM_IMG_EXPECTED = 1
-
-# Debugging
-current_date = datetime.date(2011, 2, 1)
-# end_date = datetime.date(2012, 9, 3)
-
 
 #! -------- Define functions --------
 
@@ -38,7 +39,7 @@ def handle_bc_irregularities(date: datetime.date):
     Handles irregularities with BC dates.
     For example, the 15/01/01 BC never occurred. This function adjusts such dates to the next valid date.
 
-    Parameters:
+    Parameter:
         date (datetime.date): The date to be checked and potentially corrected.
 
     Returns:
@@ -61,7 +62,7 @@ def closest_friday(date: datetime.date):
     Winners are announced on the Friday, so make sure all dates in the URL are fridays
     Handles invalid dates (dates in the future and dates before 01/12/00 the first friday)
 
-    Parameters:
+    Parameter:
         date (datetime.date): The date to be checked and potentially corrected.
 
     Returns:
@@ -102,6 +103,15 @@ def closest_friday(date: datetime.date):
             return date + datetime.timedelta(days=days_to_next_friday)
 
 async def check_url(url):
+    """
+    Checks URLs to see if it contains a BC image. If it doesn't exist (status code is not 200) then there was no image.
+
+    Parameter:
+        url (string): The url to be checked.
+
+    Returns:
+        string: Whether or not the URL contains an image
+    """
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url)
@@ -113,8 +123,36 @@ async def check_url(url):
         except httpx.RequestError as e:
             return f"URL {url} resulted in an error: {e}"
 
+async def batch_check_urls(urls, batch_size=10):
+    """
+    Process the URLs in batches to prevent sending too many requests to Neopets.
+
+    Parameters:
+        url (string): The url to be checked.
+        batch_size (int, optional): The number of URLs checked in each batch.
+    """
+
+    results = []
+
+    for i in range(0, len(urls), batch_size):
+        batch = urls[i:i + batch_size]
+        tasks = [asyncio.create_task(check_url(url)) for url in batch]
+        results += await asyncio.gather(*tasks, return_exceptions=True)
+        print("URLs scanned: ", i, "/", len(urls), " | BC Images Found: ", len(bc_entries))
+        if len(bc_entries) == NUM_IMG_EXPECTED:
+            break
+
+    return results
+
 
 #! -------- Start Logic --------
+
+# Current date and time in NST (GMT-8)
+current_date_gmt8 = datetime.datetime.utcnow() - datetime.timedelta(hours=8)
+
+# Corresponding date before the given number of hours
+current_date = current_date_gmt8 - datetime.timedelta(hours=HOURS)
+current_date = current_date.date()
 
 # Clean to grab the closest Friday (when winners are announced)
 current_date = closest_friday(current_date)
@@ -141,20 +179,6 @@ while current_date <= end_date:
         valid_urls.append(current_date_url)
 
 print("Number of valid URLS: ", len(valid_urls))
-
-async def batch_check_urls(urls, batch_size=10):
-    # Process the URLs in batches
-    results = []
-
-    for i in range(0, len(urls), batch_size):
-        batch = urls[i:i + batch_size]
-        tasks = [asyncio.create_task(check_url(url)) for url in batch]
-        results += await asyncio.gather(*tasks, return_exceptions=True)
-        print("URLs scanned: ", i, "/", len(urls), " | BC Images Found: ", len(bc_entries))
-        if len(bc_entries) == NUM_IMG_EXPECTED:
-            break
-
-    return results
 
 results = asyncio.run(batch_check_urls(valid_urls))
 
