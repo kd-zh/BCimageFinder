@@ -15,7 +15,7 @@ BC = Beauty Contest
 
 ``PETNAME = "Poysion"``
 
-2. Set the number of trophies your pet has
+2. Set the number of rounds your pet has won (if they won two trophies in a round, only one image is saved regardless)
 
 ``NUM_IMG_EXPECTED = 1``
 

@@ -169,7 +169,6 @@ bc_entries = []
 
 # Loop through all given dates
 while current_date <= end_date:
-    print(current_date)
 
     # Adjust date if it's an irregular case
     current_date = handle_bc_irregularities(current_date)
