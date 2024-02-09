@@ -7,17 +7,18 @@ import datetime
 #! -------- Changeable Variables --------
 
 # Set petname to loop through (case-sensitive)
-PETNAME = "Poysion"
+PETNAME = "Isap"
 
 # Set the number of trophies your pet has
 NUM_IMG_EXPECTED = 1
 
 # Set how old your Neopet is (in hours)
-HOURS = 106272
+HOURS = 112946
 
 
 #! -------- Set constants --------
 
+# Find elapsed time
 START_TIME = time.time()
 
 # Starting date of BC (Monday)

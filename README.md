@@ -13,7 +13,7 @@ BC = Beauty Contest
 
 1. Set petname to loop through (case-sensitive)
 
-``PETNAME = "Poysion"``
+``PETNAME = "Isap"``
 
 2. Set the number of rounds your pet has won (if they won two trophies in a round, only one image is saved regardless)
 
@@ -21,7 +21,7 @@ BC = Beauty Contest
 
 3. Set how old your Neopet is (in hours)
 
-``HOURS = 106272``
+``HOURS = 112946``
 
 
 ### Notes
